@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocha Chueiri - Escola Mágica Ancestral</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+   
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        magic: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#2e1065',
+                            dark: '#0d0b18',
+                            card: '#16122c',
+                            gold: '#fbbf24',
+                            amber: '#d97706',
+                            cyan: '#06b6d4'
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                        'rune-glow': 'runeGlow 2s infinite alternate',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(139, 92, 246, 0.3)' },
+                            '50%': { boxShadow: '0 0 30px rgba(251, 191, 36, 0.6)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        runeGlow: {
+                            '0%': { filter: 'drop-shadow(0 0 2px #8b5cf6)' },
+                            '100%': { filter: 'drop-shadow(0 0 10px #fbbf24)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0d0b18;
+            color: #e2e8f0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d0b18;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2e1065;
+            border-radius: 4px;
+            border: 1px solid #7c3aed;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6d28d9;
+        }
+
+        /* Glassmorphism effects */
+        .glass-panel {
+            background: rgba(22, 18, 44, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .glass-panel-gold {
+            background: rgba(30, 22, 10, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fffbeb 0%, #fbbf24 50%, #b45309 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .magic-gradient-text {
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 50%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Magic Canvas */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between selection:bg-magic-600 selection:text-white">
+
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Global Toast Notification System -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+       
+        <header class="glass-panel sticky top-0 z-40 border-b border-purple-900/50 px-4 lg:px-8 py-3 shadow-2xl">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+               
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="app.navTo('hub')">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-900 via-magic-600 to-amber-400 p-0.5 shadow-lg shadow-purple-500/30">
+                        <div class="w-full h-full bg-magic-dark rounded-full flex items-center justify-center font-cinzel font-bold text-amber-400 text-xl">
+                            🏰
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="font-cinzel text-lg md:text-xl font-bold tracking-wider gold-gradient-text leading-tight">ROCHA CHUEIRI</h1>
+                        <p class="text-xs text-purple-300 font-medium tracking-widest uppercase">Escola Mágica Ancestral</p>
+                    </div>
+                </div>
+
+                <!-- Student Quick Info Badge (Hidden when creating character) -->
+                <div id="headerUserBadge" class="hidden flex items-center gap-4 bg-purple-950/60 border border-purple-500/30 px-4 py-1.5 rounded-full">
+                    <div class="flex items-center gap-2">
+                        <span id="headerAvatar" class="text-2xl">🧝</span>
+                        <div>
+                            <div id="headerName" class="font-cinzel text-xs md:text-sm font-bold text-amber-300">Carregando...</div>
+                            <div class="text-[10px] text-purple-300 flex items-center gap-2">
+                                <span id="headerRaceTeam">Elfo • Chama Ancestral</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-6 w-px bg-purple-800"></div>
+                    <div class="text-right">
+                        <div class="text-[10px] uppercase text-purple-400 font-bold">Sintonia</div>
+                        <div id="headerLevel" class="font-cinzel text-xs md:text-sm font-bold text-cyan-400">Nível 1</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] uppercase text-amber-400 font-bold">Essência</div>
+                        <div id="headerEssence" class="font-cinzel text-xs md:text-sm font-bold text-amber-400">0 XP</div>
+                    </div>
+                </div>
+
+                <!-- Control Buttons -->
+                <div class="flex items-center gap-2">
+                    <button id="soundToggleBtn" onclick="sound.toggleMute()" class="px-3 py-1.5 rounded-lg bg-purple-900/40 hover:bg-purple-800/60 border border-purple-500/30 text-xs text-purple-200 transition flex items-center gap-1.5">
+                        <span id="soundIcon">🔊</span>
+                        <span class="hidden md:inline">Som</span>
+                    </button>
+                    <button onclick="app.resetDataModal()" class="px-3 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 border border-red-500/30 text-xs text-red-300 transition" title="Reiniciar Personagem">
+                        ⚙️
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8">
+           
+            <!-- SECTION 0: CHARACTER CREATION MODAL / SCREEN -->
+            <section id="secCreation" class="transition-all duration-500">
+                <div class="max-w-3xl mx-auto glass-panel p-6 md:p-10 rounded-2xl border border-purple-500/30 shadow-2xl relative overflow-hidden">
+                    <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+                   
+                    <div class="text-center mb-8">
+                        <span class="text-4xl mb-2 inline-block animate-bounce">📜</span>
+                        <h2 class="text-2xl md:text-4xl font-cinzel font-bold gold-gradient-text mb-2">Matrícula da Rocha Chueiri</h2>
+                        <p class="text-sm text-purple-300">As Montanhas Nebulosa convocam um novo aprendiz. Defina sua linhagem e seu companheiro místico para entrar na Competição Anual.</p>
+                    </div>
+
+                    <form id="creationForm" onsubmit="app.handleCreation(event)" class="space-y-6">
+                       
+                        <!-- Name input -->
+                        <div>
+                            <label class="block font-cinzel text-sm font-bold text-amber-300 mb-2">Nome do Aprendiz</label>
+                            <input type="text" id="inputStudentName" required maxlength="20" placeholder="Ex: Eldrin Chueiri, Lyra Vento-Solar..."
+                                class="w-full bg-purple-950/80 border border-purple-500/40 rounded-xl px-4 py-3 text-white placeholder-purple-400 focus:outline-none focus:border-amber-400 transition">
+                        </div>
+
+                        <!-- Race Selection -->
+                        <div>
+                            <label class="block font-cinzel text-sm font-bold text-amber-300 mb-2">Escolha sua Raça</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="raceOptions">
+                                <!-- JS inserts race cards -->
+                            </div>
+                        </div>
+
+                        <!-- Creature Selection -->
+                        <div>
+                            <label class="block font-cinzel text-sm font-bold text-amber-300 mb-2">Sua Criatura Mágica Acompanhante</label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="creatureOptions">
+                                <!-- JS inserts creature cards -->
+                            </div>
+                        </div>
+
+                        <!-- Team/Family Selection -->
+                        <div>
+                            <label class="block font-cinzel text-sm font-bold text-amber-300 mb-2">Família / Turma da Competição</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="teamOptions">
+                                <!-- JS inserts team cards -->
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-purple-700 via-magic-600 to-amber-500 hover:from-purple-600 hover:to-amber-400 font-cinzel font-bold text-lg text-white shadow-lg shadow-purple-900/50 transition transform hover:-translate-y-0.5">
+                            Adentrar Portões Mágicos ✨
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="secHub" class="hidden space-y-8">
+               
+                <!-- Welcome Banner -->
+                <div class="glass-panel p-6 md:p-8 rounded-2xl border border-purple-500/30 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-3 z-10 text-center md:text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/60 border border-purple-400/30 text-xs text-amber-300 font-medium">
+                            <span>✨ Competição Anual das Montanhas Nebulosa</span>
+                        </div>
+                        <h2 class="text-2xl md:text-4xl font-cinzel font-bold gold-gradient-text" id="welcomeHeading">Bem-vindo à Rocha Chueiri</h2>
+                        <p class="text-sm text-purple-200 max-w-xl">
+                            O Arquimago Professor iniciou as provações. Supere os desafios de voo, vença duelos mágicos e decifre runas antigas para levar sua turma ao topo do Placar e revelar os segredos das ruínas.
+                        </p>
+                    </div>
+
+                    <!-- Companion Display Card -->
+                    <div class="z-10 flex flex-col items-center glass-panel-gold p-4 rounded-xl border border-amber-500/30 min-w-[220px]">
+                        <div id="hubCompanionIcon" class="text-6xl animate-float mb-2">🦅</div>
+                        <div id="hubCompanionName" class="font-cinzel font-bold text-amber-300 text-center">Grifo de Nevoeiro</div>
+                        <div id="hubCompanionType" class="text-xs text-amber-200/80 mb-2">Mestre dos Ventos</div>
+                        <div class="w-full bg-purple-950/80 rounded-full h-2 overflow-hidden border border-amber-500/20">
+                            <div id="hubCompanionBondBar" class="bg-gradient-to-r from-amber-500 to-cyan-400 h-full w-[40%] transition-all duration-500"></div>
+                        </div>
+                        <div class="text-[10px] text-purple-300 mt-1 flex justify-between w-full">
+                            <span>Sintonia com Criatura</span>
+                            <span id="hubBondPercent">40%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs for Minigames & Modules -->
+                <div class="flex flex-wrap gap-2 border-b border-purple-900/60 pb-3">
+                    <button onclick="app.switchTab('leaderboard')" class="tab-btn active px-4 py-2 rounded-xl bg-purple-900/60 border border-purple-500/40 text-sm font-cinzel font-semibold text-amber-300 hover:bg-purple-800 transition flex items-center gap-2" id="tab-leaderboard">
+                        🏆 Placar das Famílias
+                    </button>
+                    <button onclick="app.switchTab('gameFlight')" class="tab-btn px-4 py-2 rounded-xl bg-purple-950/40 border border-purple-800/40 text-sm font-cinzel font-semibold text-purple-300 hover:bg-purple-800 transition flex items-center gap-2" id="tab-gameFlight">
+                        🦅 Voo nas Nebulosas
+                    </button>
+                    <button onclick="app.switchTab('gameDuel')" class="tab-btn px-4 py-2 rounded-xl bg-purple-950/40 border border-purple-800/40 text-sm font-cinzel font-semibold text-purple-300 hover:bg-purple-800 transition flex items-center gap-2" id="tab-gameDuel">
+                        🪄 Duelo Mágico
+                    </button>
+                    <button onclick="app.switchTab('gamePuzzle')" class="tab-btn px-4 py-2 rounded-xl bg-purple-950/40 border border-purple-800/40 text-sm font-cinzel font-semibold text-purple-300 hover:bg-purple-800 transition flex items-center gap-2" id="tab-gamePuzzle">
+                        🧩 Labirinto das Runas
+                    </button>
+                    <button onclick="app.switchTab('grimoire')" class="tab-btn px-4 py-2 rounded-xl bg-purple-950/40 border border-purple-800/40 text-sm font-cinzel font-semibold text-purple-300 hover:bg-purple-800 transition flex items-center gap-2" id="tab-grimoire">
+                        📖 Grimório & Treino
+                    </button>
+                    <button onclick="app.switchTab('lore')" class="tab-btn px-4 py-2 rounded-xl bg-purple-950/40 border border-purple-800/40 text-sm font-cinzel font-semibold text-purple-300 hover:bg-purple-800 transition flex items-center gap-2" id="tab-lore">
+                        📜 Segredos Ocultos
+                    </button>
+                </div>
+
+                <!-- TAB CONTENT CONTAINER -->
+                <div id="tabContent">
+
+                    <div id="content-leaderboard" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                           
+                            <!-- Main Leaderboard list -->
+                            <div class="md:col-span-2 glass-panel p-6 rounded-2xl border border-purple-500/30">
+                                <div class="flex justify-between items-center mb-6">
+                                    <div>
+                                        <h3 class="font-cinzel text-xl font-bold gold-gradient-text">Classificação da Competição Anual</h3>
+                                        <p class="text-xs text-purple-300">Pontuação atualizada em tempo real conforme os desafios concluídos.</p>
+                                    </div>
+                                    <div class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-cinzel font-bold animate-pulse">
+                                        ⚡ Troféu Ancestral
+                                    </div>
+                                </div>
+
+                                <div id="leaderboardList" class="space-y-3">
+                                    <!-- Dynamic Leaderboard Items -->
+                                </div>
+                            </div>
+
+                            <!-- Archmage Notice & Quest log -->
+                            <div class="space-y-6">
+                                <div class="glass-panel p-5 rounded-2xl border border-purple-500/30 relative">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400 flex items-center justify-center text-xl">
+                                            🧙‍♂️
+                                        </div>
+                                        <div>
+                                            <div class="font-cinzel font-bold text-amber-300 text-sm">Arquimago Professor</div>
+                                            <div class="text-[10px] text-purple-300">Diretor de Rocha Chueiri</div>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-purple-200 italic leading-relaxed bg-purple-950/50 p-3 rounded-xl border border-purple-800/40">
+                                        "A verdadeira magia não reside apenas na força bruta dos feitiços, mas no elo inquebrável entre o aprendiz e sua criatura. Vençam os 3 testes para desbloquear os segredos ocultos da montanha!"
+                                    </p>
+                                </div>
+
+                                <div class="glass-panel p-5 rounded-2xl border border-purple-500/30">
+                                    <h4 class="font-cinzel font-bold text-amber-300 text-sm mb-3">Tarefas Ativas</h4>
+                                    <ul class="space-y-2 text-xs text-purple-200" id="taskList">
+                                        <!-- JS inserts active quests -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-gameFlight" class="hidden space-y-4">
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl border border-purple-500/30">
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <h3 class="font-cinzel text-xl font-bold gold-gradient-text">Desafio 1: Voo nas Montanhas Nebulosa</h3>
+                                    <p class="text-xs text-purple-300">Guie sua criatura mágica. Desvie dos penhascos e rochas enquanto coleta orbes de mana e cristais mágicos!</p>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm font-cinzel">
+                                    <div class="bg-purple-950/80 px-3 py-1.5 rounded-lg border border-purple-500/30">
+                                        Pontos: <span id="flightScore" class="text-amber-400 font-bold">0</span>
+                                    </div>
+                                    <div class="bg-purple-950/80 px-3 py-1.5 rounded-lg border border-purple-500/30">
+                                        Orbes: <span id="flightOrbs" class="text-cyan-400 font-bold">0</span>
+                                    </div>
+                                    <button id="btnStartFlight" onclick="gameFlight.start()" class="px-4 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-amber-500 text-white font-bold hover:opacity-90 transition">
+                                        Iniciar Voo 🦅
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Canvas Flight Container -->
+                            <div class="relative w-full h-[360px] md:h-[450px] bg-slate-950 rounded-xl overflow-hidden border border-purple-500/40 shadow-inner flex items-center justify-center">
+                                <canvas id="flightCanvas" class="w-full h-full block cursor-pointer"></canvas>
+
+                                <!-- Flight Overlay Screens -->
+                                <div id="flightStartOverlay" class="absolute inset-0 bg-magic-dark/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+                                    <span class="text-5xl mb-3 animate-bounce">🏔️</span>
+                                    <h4 class="font-cinzel text-2xl font-bold text-amber-300 mb-2">Preparado para Decolar?</h4>
+                                    <p class="text-xs text-purple-200 max-w-md mb-4">
+                                        Use as <b>Setas do Teclado (Cima/Baixo)</b> ou <b>Toque/Arraste na tela</b> para mover sua criatura. Evite colisões com os picos rochosos!
+                                    </p>
+                                    <button onclick="gameFlight.start()" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-magic-dark font-cinzel font-bold text-base transition transform hover:scale-105 shadow-lg">
+                                        Decolar Agora!
+                                    </button>
+                                </div>
+
+                                <div id="flightGameOverOverlay" class="hidden absolute inset-0 bg-magic-dark/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
+                                    <span class="text-5xl mb-2">💥</span>
+                                    <h4 class="font-cinzel text-2xl font-bold text-red-400 mb-1">Voo Interrompido!</h4>
+                                    <p class="text-sm text-purple-200 mb-4" id="flightResultText">Sua criatura precisou de descanso.</p>
+                                   
+                                    <div class="bg-purple-950/80 border border-purple-500/30 rounded-xl p-4 mb-4 w-64 space-y-1 text-xs">
+                                        <div class="flex justify-between"><span>Pontuação:</span> <span id="resFlightScore" class="font-bold text-amber-400">0</span></div>
+                                        <div class="flex justify-between"><span>Orbes Coletados:</span> <span id="resFlightOrbs" class="font-bold text-cyan-400">0</span></div>
+                                        <div class="flex justify-between border-t border-purple-800 pt-1 mt-1"><span>Pontos para Turma:</span> <span id="resFlightTeamPts" class="font-bold text-emerald-400">+0</span></div>
+                                    </div>
+
+                                    <button onclick="gameFlight.start()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-amber-500 text-white font-cinzel font-bold text-sm hover:opacity-90 transition">
+                                        Tentar Novamente 🔄
+                                    </button>
+                                </div>
+                            </div>
+                           
+                            <!-- Mobile Controls -->
+                            <div class="flex md:hidden justify-center gap-4 mt-3">
+                                <button onpointerdown="gameFlight.moveUp()" class="w-16 h-12 bg-purple-900/80 border border-purple-500/40 rounded-xl text-xl flex items-center justify-center active:bg-purple-700">⬆️</button>
+                                <button onpointerdown="gameFlight.moveDown()" class="w-16 h-12 bg-purple-900/80 border border-purple-500/40 rounded-xl text-xl flex items-center justify-center active:bg-purple-700">⬇️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-gameDuel" class="hidden space-y-4">
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl border border-purple-500/30">
+                            <div class="flex justify-between items-center mb-6">
+                                <div>
+                                    <h3 class="font-cinzel text-xl font-bold gold-gradient-text">Desafio 2: Duelo de Feitiços Elementais</h3>
+                                    <p class="text-xs text-purple-300">Enfrente aprendizes das famílias rivais na Arena de Rocha Chueiri!</p>
+                                </div>
+                                <button onclick="gameDuel.initDuel()" class="px-3 py-1.5 rounded-lg bg-purple-900/60 hover:bg-purple-800 border border-purple-500/30 text-xs text-amber-300 font-cinzel">
+                                    Novo Oponente ⚔️
+                                </button>
+                            </div>
+
+                            <!-- Duel Arena Screen -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                               
+                                <!-- Player Fighter -->
+                                <div class="glass-panel p-4 rounded-xl border border-purple-500/40 relative flex flex-col justify-between">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <span id="duelPlayerAvatar" class="text-3xl">🧝</span>
+                                            <div>
+                                                <div id="duelPlayerName" class="font-cinzel font-bold text-amber-300 text-sm">Seu Aprendiz</div>
+                                                <div id="duelPlayerTeam" class="text-[10px] text-purple-300">Chama Ancestral</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-xs text-purple-300 font-bold">Mana: </span>
+                                            <span id="duelPlayerManaVal" class="text-xs text-cyan-400 font-bold">100/100</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Health & Mana Bars -->
+                                    <div class="space-y-2 mb-4">
+                                        <div>
+                                            <div class="flex justify-between text-[10px] text-purple-300 mb-0.5"><span>Vida</span><span id="duelPlayerHpVal">100/100</span></div>
+                                            <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-purple-800">
+                                                <div id="duelPlayerHpBar" class="bg-gradient-to-r from-emerald-500 to-green-400 h-full w-full transition-all duration-300"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-purple-800">
+                                                <div id="duelPlayerManaBar" class="bg-gradient-to-r from-cyan-500 to-blue-400 h-full w-full transition-all duration-300"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Companion assistance badge -->
+                                    <div id="duelPlayerCreatureBadge" class="p-2 rounded-lg bg-purple-950/60 border border-purple-800 text-[11px] text-purple-200 flex items-center justify-between">
+                                        <span>🦅 Companheiro Pronto!</span>
+                                        <span class="text-amber-400 font-bold">+15% Dano</span>
+                                    </div>
+                                </div>
+
+                                <!-- AI Rival Fighter -->
+                                <div class="glass-panel p-4 rounded-xl border border-red-500/30 relative flex flex-col justify-between">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <span id="duelEnemyAvatar" class="text-3xl">🧙‍♀️</span>
+                                            <div>
+                                                <div id="duelEnemyName" class="font-cinzel font-bold text-red-300 text-sm">Rival de Asas de Prata</div>
+                                                <div id="duelEnemyTeam" class="text-[10px] text-red-200">Asas de Prata</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-xs text-purple-300 font-bold">Mana: </span>
+                                            <span id="duelEnemyManaVal" class="text-xs text-cyan-400 font-bold">100/100</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Health & Mana Bars -->
+                                    <div class="space-y-2 mb-4">
+                                        <div>
+                                            <div class="flex justify-between text-[10px] text-purple-300 mb-0.5"><span>Vida</span><span id="duelEnemyHpVal">100/100</span></div>
+                                            <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-red-900">
+                                                <div id="duelEnemyHpBar" class="bg-gradient-to-r from-red-600 to-amber-500 h-full w-full transition-all duration-300"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-red-900">
+                                                <div id="duelEnemyManaBar" class="bg-gradient-to-r from-cyan-500 to-blue-400 h-full w-full transition-all duration-300"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-2 rounded-lg bg-red-950/40 border border-red-900/50 text-[11px] text-red-200 flex items-center justify-between">
+                                        <span>🐉 Dragão Guardião Rival</span>
+                                        <span class="text-red-400 font-bold">Nível Ajustado</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Combat Log Box -->
+                            <div class="bg-slate-950/90 rounded-xl p-3 border border-purple-900/60 h-24 overflow-y-auto font-mono text-xs text-purple-300 mb-4 space-y-1" id="duelLog">
+                                <div class="text-amber-400">⚡ O duelo começou! Escolha sua magia.</div>
+                            </div>
+
+                            <!-- Spell Cards Deck -->
+                            <div class="space-y-2">
+                                <h4 class="font-cinzel text-xs font-bold text-amber-300 uppercase tracking-wider">Escolha seu Feitiço do Turno:</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-5 gap-3" id="spellCardGrid">
+                                    <!-- JS dynamically builds Spell Deck cards -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-gamePuzzle" class="hidden space-y-4">
+                        <div class="glass-panel p-4 md:p-6 rounded-2xl border border-purple-500/30">
+                            <div class="flex justify-between items-center mb-6">
+                                <div>
+                                    <h3 class="font-cinzel text-xl font-bold gold-gradient-text">Desafio 3: O Labirinto das Runas</h3>
+                                    <p class="text-xs text-purple-300">Memorize e alinhe a sequência das Runas Ancestrais para destravar os portões de pergaminhos ocultos.</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs text-purple-300">Sequência Atual: <span id="puzzleLevelText" class="text-amber-300 font-bold">Nível 1</span></div>
+                                </div>
+                            </div>
+
+                            <div class="max-w-xl mx-auto flex flex-col items-center">
+                               
+                                <!-- Status Banner -->
+                                <div id="puzzleStatusBox" class="w-full text-center py-2 px-4 rounded-xl bg-purple-950/80 border border-purple-500/30 text-amber-300 font-cinzel text-sm mb-6">
+                                    Pressione "Iniciar Sequência" para ver a ordem mística.
+                                </div>
+
+                                <!-- Rune Display Circle Grid -->
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 w-full" id="runeButtonContainer">
+                                    <!-- JS generates 4 Rune Buttons -->
+                                </div>
+
+                                <div class="flex gap-4">
+                                    <button onclick="gamePuzzle.startLevel()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-700 to-amber-500 hover:from-purple-600 hover:to-amber-400 text-white font-cinzel font-bold text-sm shadow-lg shadow-purple-900/50 transition">
+                                        Iniciar Sequência ✨
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-grimoire" class="hidden space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                           
+                            <!-- Creature Stats Upgrade -->
+                            <div class="glass-panel p-6 rounded-2xl border border-purple-500/30 md:col-span-1 space-y-4">
+                                <h3 class="font-cinzel text-lg font-bold gold-gradient-text">Treinamento de Criatura</h3>
+                                <p class="text-xs text-purple-300">Use os Pontos de Essência ganhos nas provações para elevar os atributos mágicos.</p>
+                               
+                                <div class="bg-purple-950/60 p-3 rounded-xl border border-purple-800 text-xs flex justify-between items-center">
+                                    <span>Pontos Disponíveis:</span>
+                                    <span id="statPointsAvail" class="font-bold text-amber-400 text-sm">0 PTS</span>
+                                </div>
+
+                                <div class="space-y-3" id="statList">
+                                    <!-- Stat items inserted by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Spells Unlocked List -->
+                            <div class="glass-panel p-6 rounded-2xl border border-purple-500/30 md:col-span-2 space-y-4">
+                                <h3 class="font-cinzel text-lg font-bold gold-gradient-text">Grimório de Magia Ancestral</h3>
+                                <p class="text-xs text-purple-300">Conforme sua Sintonia evolui, novas magias elementais são gravadas no seu grimório.</p>
+                               
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="grimoireSpellCards">
+                                    <!-- JS generates Grimório cards -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-lore" class="hidden space-y-6">
+                        <div class="glass-panel p-6 rounded-2xl border border-purple-500/30">
+                            <div class="mb-6">
+                                <h3 class="font-cinzel text-2xl font-bold gold-gradient-text">Segredos Ocultos da Rocha Chueiri</h3>
+                                <p class="text-xs text-purple-300">Pergaminhos antigos das Montanhas Nebulosa desbloqueados pelas suas vitórias.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="loreScrollsGrid">
+                                <!-- JS inserts lore scrolls -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+
+        <footer class="glass-panel border-t border-purple-900/50 py-4 text-center text-xs text-purple-400 mt-8">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <span>🏰 Rocha Chueiri • Competição Anual das Montanhas Nebulosa</span>
+                <span>Arquimago Professor &copy; Escola Mágica Ancestral</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const sound = {
+            ctx: null,
+            muted: false,
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+            },
+
+            toggleMute() {
+                this.muted = !this.muted;
+                const icon = document.getElementById('soundIcon');
+                if (icon) icon.innerText = this.muted ? '🔇' : '🔊';
+                app.showToast(this.muted ? 'Som Desativado' : 'Som Ativado', 'info');
+            },
+
+            playBeep(freq = 440, type = 'sine', duration = 0.1, gainVal = 0.1) {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e){}
+            },
+
+            playClick() {
+                this.playBeep(600, 'sine', 0.05, 0.05);
+            },
+
+            playSpell() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.3);
+                } catch(e){}
+            },
+
+            playCollect() {
+                this.playBeep(880, 'triangle', 0.15, 0.1);
+            },
+
+            playHit() {
+                this.playBeep(120, 'square', 0.2, 0.15);
+            },
+
+            playVictory() {
+                if (this.muted) return;
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => this.playBeep(freq, 'sine', 0.25, 0.12), idx * 120);
+                });
+            }
+        };
+
+        const RACES = {
+            elfo: { name: 'Elfo da Mágia Starlight', icon: '🧝', desc: '+15 Sintonia e Mana Inicial' },
+            humano: { name: 'Humano Aprendiz', icon: '🧙‍♂️', desc: '+10 em Todos os Atributos' },
+            florestal: { name: 'Ser Florestal', icon: 'FA', desc: '+20 Harmonia com Criaturas' },
+            anao: { name: 'Anão Guardião', icon: '🧔‍♂️', desc: '+20 Resistência de Feitiço' }
+        };
+
+        const CREATURES = {
+            grifo: { name: 'Grifo de Nevoeiro', icon: '🦅', type: 'Mestre dos Ventos', desc: 'Agilidade Suprema no Voo' },
+            fenix: { name: 'Fênix Dourada', icon: '🕊️', type: 'Fogo Místico', desc: 'Ressuscita Mana no Duelo' },
+            dragao: { name: 'Dragão Elemental', icon: '🐉', type: 'Sopro de Dragão', desc: 'Poder de Ataque Elevado' }
+        };
+
+        const TEAMS = {
+            chama: { name: 'Chama Ancestral', color: 'from-amber-600 to-red-600', icon: '🔥', basePts: 1250 },
+            prata: { name: 'Asas de Prata', color: 'from-cyan-500 to-blue-600', icon: '🪶', basePts: 1180 },
+            neves: { name: 'Rugido das Neves', color: 'from-purple-500 to-indigo-600', icon: '❄️', basePts: 1100 },
+            pedra: { name: 'Escudo de Pedra', color: 'from-emerald-600 to-teal-700', icon: '🛡️', basePts: 1050 }
+        };
+
+        const SPELLS = [
+            { id: 'fogo', name: 'Bola de Fogo Ancestral', cost: 20, dmg: 28, heal: 0, icon: '🔥', type: 'Ataque' },
+            { id: 'nevoeiro', name: 'Escudo de Nevoeiro', cost: 15, dmg: 0, heal: 22, icon: '🌫️', type: 'Defesa' },
+            { id: 'raio', name: 'Raio de Ar Relâmpago', cost: 25, dmg: 35, heal: 0, icon: '⚡', type: 'Ataque' },
+            { id: 'luz', name: 'Luz Purificadora', cost: 30, dmg: 0, heal: 40, icon: '✨', type: 'Cura' },
+            { id: 'sintonia', name: 'Sopro da Criatura', cost: 35, dmg: 45, heal: 10, icon: '🐾', type: 'Especial' }
+        ];
+
+        const LORE_SCROLLS = [
+            { id: 1, title: 'A Fundação da Rocha Chueiri', req: 'Padrão', text: 'Há dez séculos, os quatro arquimagos fundaram esta fortaleza sobre as Montanhas Nebulosa para proteger a chama viva do mundo.', unlocked: true },
+            { id: 2, title: 'O Ninho dos Grifos Albinos', req: 'Conclua 1 Voo', text: 'Nas cristas mais altas, onde as nuvens se tornam sólidas, vivem os grifos originais cujas penas canalizam tempestades.', unlocked: false },
+            { id: 3, title: 'O Segredo do Arquimago Professor', req: 'Vença 1 Duelo', text: 'Rumores dizem que o Arquimago guarda a Runa Primordial, capaz de unificar a energia elemental de todas as quatro turmas.', unlocked: false },
+            { id: 4, title: 'O Labirinto das Ruínas Ocultas', req: 'Complete 1 Puzzle', text: 'Sob os salões de treino reside um labirinto secreto. Apenas os alunos de mente mais pura conseguirão ouvir seu eco.', unlocked: false }
+        ];
+
+        const app = {
+            state: {
+                student: null,
+                teamScores: { chama: 1250, prata: 1180, neves: 1100, pedra: 1050 },
+                statPoints: 3,
+                stats: { sintonia: 10, mana: 10, voo: 10, forca: 10 },
+                tasks: [
+                    { id: 't1', title: 'Completar o Voo Nebuloso', done: false, reward: 50 },
+                    { id: 't2', title: 'Vencer um Duelo Mágico', done: false, reward: 75 },
+                    { id: 't3', title: 'Decifrar o Puzzle de Runas', done: false, reward: 60 }
+                ]
+            },
+
+            init() {
+                this.loadFromStorage();
+                this.renderCreationCards();
+                this.setupParticleBg();
+               
+                if (this.state.student) {
+                    this.showMainHub();
+                } else {
+                    document.getElementById('secCreation').classList.remove('hidden');
+                    document.getElementById('secHub').classList.add('hidden');
+                }
+            },
+
+            saveToStorage() {
+                localStorage.setItem('rocha_chueiri_save', JSON.stringify(this.state));
+            },
+
+            loadFromStorage() {
+                const data = localStorage.getItem('rocha_chueiri_save');
+                if (data) {
+                    try {
+                        this.state = Object.assign(this.state, JSON.parse(data));
+                    } catch(e){}
+                }
+            },
+
+            showToast(msg, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+               
+                const toast = document.createElement('div');
+                toast.className = `glass-panel px-4 py-2.5 rounded-xl border text-xs font-bold font-cinzel shadow-xl transition-all duration-300 transform translate-x-10 opacity-0 flex items-center gap-2 ${
+                    type === 'success' ? 'border-emerald-500/50 text-emerald-300' :
+                    type === 'error' ? 'border-red-500/50 text-red-300' :
+                    'border-purple-500/50 text-amber-300'
+                }`;
+                toast.innerHTML = `<span>✨</span> <span>${msg}</span>`;
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-10', 'opacity-0');
+                }, 10);
+
+                setTimeout(() => {
+                    toast.classList.add('translate-x-10', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            },
+
+            renderCreationCards() {
+                // Races
+                const raceGrid = document.getElementById('raceOptions');
+                raceGrid.innerHTML = Object.keys(RACES).map((key, i) => {
+                    const r = RACES[key];
+                    return `
+                        <label class="cursor-pointer">
+                            <input type="radio" name="race" value="${key}" ${i === 0 ? 'checked' : ''} class="peer sr-only">
+                            <div class="glass-panel p-3 rounded-xl border border-purple-800 peer-checked:border-amber-400 peer-checked:bg-purple-900/60 hover:bg-purple-900/40 transition text-center space-y-1 h-full flex flex-col items-center justify-center">
+                                <span class="text-3xl">${r.icon === 'FA' ? '🧚' : r.icon}</span>
+                                <div class="font-cinzel text-xs font-bold text-amber-200">${r.name}</div>
+                                <div class="text-[10px] text-purple-300">${r.desc}</div>
+                            </div>
+                        </label>
+                    `;
+                }).join('');
+
+                // Creatures
+                const creatureGrid = document.getElementById('creatureOptions');
+                creatureGrid.innerHTML = Object.keys(CREATURES).map((key, i) => {
+                    const c = CREATURES[key];
+                    return `
+                        <label class="cursor-pointer">
+                            <input type="radio" name="creature" value="${key}" ${i === 0 ? 'checked' : ''} class="peer sr-only">
+                            <div class="glass-panel p-3 rounded-xl border border-purple-800 peer-checked:border-amber-400 peer-checked:bg-purple-900/60 hover:bg-purple-900/40 transition text-center space-y-1">
+                                <span class="text-3xl animate-float inline-block">${c.icon}</span>
+                                <div class="font-cinzel text-xs font-bold text-amber-200">${c.name}</div>
+                                <div class="text-[10px] text-cyan-300">${c.type}</div>
+                                <div class="text-[10px] text-purple-300">${c.desc}</div>
+                            </div>
+                        </label>
+                    `;
+                }).join('');
+
+                // Teams
+                const teamGrid = document.getElementById('teamOptions');
+                teamGrid.innerHTML = Object.keys(TEAMS).map((key, i) => {
+                    const t = TEAMS[key];
+                    return `
+                        <label class="cursor-pointer">
+                            <input type="radio" name="team" value="${key}" ${i === 0 ? 'checked' : ''} class="peer sr-only">
+                            <div class="glass-panel p-3 rounded-xl border border-purple-800 peer-checked:border-amber-400 peer-checked:bg-purple-900/60 hover:bg-purple-900/40 transition text-center space-y-1">
+                                <span class="text-2xl">${t.icon}</span>
+                                <div class="font-cinzel text-xs font-bold text-amber-200">${t.name}</div>
+                            </div>
+                        </label>
+                    `;
+                }).join('');
+            },
+
+            handleCreation(e) {
+                e.preventDefault();
+                sound.playSpell();
+               
+                const name = document.getElementById('inputStudentName').value.trim();
+                const raceKey = document.querySelector('input[name="race"]:checked').value;
+                const creatureKey = document.querySelector('input[name="creature"]:checked').value;
+                const teamKey = document.querySelector('input[name="team"]:checked').value;
+
+                this.state.student = {
+                    name,
+                    race: raceKey,
+                    creature: creatureKey,
+                    team: teamKey,
+                    xp: 0,
+                    level: 1
+                };
+
+                this.saveToStorage();
+                this.showToast('Matrícula realizada com sucesso na Rocha Chueiri!', 'success');
+                this.showMainHub();
+            },
+
+            showMainHub() {
+                document.getElementById('secCreation').classList.add('hidden');
+                document.getElementById('secHub').classList.remove('hidden');
+                document.getElementById('headerUserBadge').classList.remove('hidden');
+
+                const s = this.state.student;
+                const raceObj = RACES[s.race];
+                const creatureObj = CREATURES[s.creature];
+                const teamObj = TEAMS[s.team];
+
+                // Header info
+                document.getElementById('headerAvatar').innerText = raceObj.icon === 'FA' ? '🧚' : raceObj.icon;
+                document.getElementById('headerName').innerText = s.name;
+                document.getElementById('headerRaceTeam').innerText = `${raceObj.name.split(' ')[0]} • ${teamObj.name}`;
+                document.getElementById('headerLevel').innerText = `Nível ${s.level}`;
+                document.getElementById('headerEssence').innerText = `${s.xp} XP`;
+
+                // Hub Welcome Banner
+                document.getElementById('welcomeHeading').innerText = `Bem-vindo, ${s.name}!`;
+                document.getElementById('hubCompanionIcon').innerText = creatureObj.icon;
+                document.getElementById('hubCompanionName').innerText = creatureObj.name;
+                document.getElementById('hubCompanionType').innerText = creatureObj.type;
+
+                this.updateBondProgress();
+                this.renderLeaderboard();
+                this.renderTasks();
+                this.renderGrimoire();
+                this.renderLore();
+
+                gameDuel.initDuel();
+            },
+
+            updateBondProgress() {
+                const totalStats = Object.values(this.state.stats).reduce((a, b) => a + b, 0);
+                const percent = Math.min(100, Math.floor((totalStats / 80) * 100));
+                document.getElementById('hubCompanionBondBar').style.width = `${percent}%`;
+                document.getElementById('hubBondPercent').innerText = `${percent}%`;
+            },
+
+            addXP(amount) {
+                if (!this.state.student) return;
+                this.state.student.xp += amount;
+               
+                // Add points to student's team score
+                if (this.state.student.team) {
+                    this.state.teamScores[this.state.student.team] += amount;
+                }
+
+                // Check level up
+                const newLevel = Math.floor(this.state.student.xp / 100) + 1;
+                if (newLevel > this.state.student.level) {
+                    this.state.student.level = newLevel;
+                    this.state.statPoints += 2;
+                    sound.playVictory();
+                    this.showToast(`Parabéns! Você alcançou o Nível ${newLevel}! +2 Pontos de Atributo!`, 'success');
+                }
+
+                this.saveToStorage();
+                this.showMainHub();
+            },
+
+            switchTab(tabId) {
+                sound.playClick();
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active', 'bg-purple-900/60', 'text-amber-300');
+                    btn.classList.add('bg-purple-950/40', 'text-purple-300');
+                });
+
+                const activeBtn = document.getElementById(`tab-${tabId}`);
+                if (activeBtn) {
+                    activeBtn.classList.add('active', 'bg-purple-900/60', 'text-amber-300');
+                    activeBtn.classList.remove('bg-purple-950/40', 'text-purple-300');
+                }
+
+                const contents = ['leaderboard', 'gameFlight', 'gameDuel', 'gamePuzzle', 'grimoire', 'lore'];
+                contents.forEach(id => {
+                    const el = document.getElementById(`content-${id}`);
+                    if (el) el.classList.add('hidden');
+                });
+
+                const selectedContent = document.getElementById(`content-${tabId}`);
+                if (selectedContent) selectedContent.classList.remove('hidden');
+
+                if (tabId === 'gameFlight') {
+                    gameFlight.init();
+                }
+            },
+
+            renderLeaderboard() {
+                const list = document.getElementById('leaderboardList');
+                if (!list) return;
+
+                // Sort teams
+                const sorted = Object.keys(TEAMS).map(k => ({
+                    key: k,
+                    pts: this.state.teamScores[k],
+                    ...TEAMS[k]
+                })).sort((a, b) => b.pts - a.pts);
+
+                list.innerHTML = sorted.map((t, idx) => {
+                    const isUserTeam = this.state.student && this.state.student.team === t.key;
+                    return `
+                        <div class="glass-panel p-3 rounded-xl border ${isUserTeam ? 'border-amber-400 bg-purple-900/50' : 'border-purple-800/50'} flex items-center justify-between transition">
+                            <div class="flex items-center gap-3">
+                                <span class="font-cinzel font-bold text-sm text-purple-300 w-6">#${idx + 1}</span>
+                                <span class="text-2xl">${t.icon}</span>
+                                <div>
+                                    <div class="font-cinzel text-sm font-bold text-amber-200 flex items-center gap-2">
+                                        ${t.name}
+                                        ${isUserTeam ? '<span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-400/40 px-2 py-0.5 rounded-full">Sua Turma</span>' : ''}
+                                    </div>
+                                    <div class="text-[10px] text-purple-300">Família Mágica Ancestral</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-cinzel text-base font-bold text-amber-400">${t.pts} PTS</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            renderTasks() {
+                const list = document.getElementById('taskList');
+                if (!list) return;
+
+                list.innerHTML = this.state.tasks.map(t => `
+                    <li class="flex items-center justify-between p-2 rounded-lg bg-purple-950/40 border border-purple-800/40">
+                        <div class="flex items-center gap-2">
+                            <span>${t.done ? '✅' : '⏳'}</span>
+                            <span class="${t.done ? 'line-through text-purple-400' : 'text-purple-200'}">${t.title}</span>
+                        </div>
+                        <span class="text-amber-400 font-bold text-[10px]">+${t.reward} XP</span>
+                    </li>
+                `).join('');
+            },
+
+            completeTask(id) {
+                const t = this.state.tasks.find(x => x.id === id);
+                if (t && !t.done) {
+                    t.done = true;
+                    this.addXP(t.reward);
+                    this.showToast(`Tarefa concluída: ${t.title}!`, 'success');
+                }
+            },
+
+            renderGrimoire() {
+                // Stat points
+                document.getElementById('statPointsAvail').innerText = `${this.state.statPoints} PTS`;
+
+                const statList = document.getElementById('statList');
+                const statKeys = [
+                    { id: 'sintonia', name: 'Sintonia Criatura', icon: '🐾' },
+                    { id: 'mana', name: 'Reserva de Mana', icon: '🔮' },
+                    { id: 'voo', name: 'Agilidade no Voo', icon: '💨' },
+                    { id: 'forca', name: 'Força Elemental', icon: '⚡' }
+                ];
+
+                statList.innerHTML = statKeys.map(s => `
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-purple-950/40 border border-purple-800/40">
+                        <div class="flex items-center gap-2 text-xs">
+                            <span>${s.icon}</span>
+                            <span class="text-purple-200 font-semibold">${s.name}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-cinzel text-amber-300 font-bold text-xs">${this.state.stats[s.id]}</span>
+                            <button onclick="app.upgradeStat('${s.id}')" ${this.state.statPoints > 0 ? '' : 'disabled'} class="w-6 h-6 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:opacity-30 disabled:hover:bg-amber-500 text-magic-dark font-bold text-xs flex items-center justify-center transition">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Grimório cards
+                const spellGrid = document.getElementById('grimoireSpellCards');
+                spellGrid.innerHTML = SPELLS.map(sp => `
+                    <div class="glass-panel p-3 rounded-xl border border-purple-800 flex items-center gap-3">
+                        <span class="text-3xl">${sp.icon}</span>
+                        <div>
+                            <div class="font-cinzel text-xs font-bold text-amber-300">${sp.name}</div>
+                            <div class="text-[10px] text-purple-300">Custo: ${sp.cost} Mana • Tipo: ${sp.type}</div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            upgradeStat(statKey) {
+                if (this.state.statPoints > 0) {
+                    sound.playClick();
+                    this.state.statPoints--;
+                    this.state.stats[statKey] += 2;
+                    this.saveToStorage();
+                    this.renderGrimoire();
+                    this.updateBondProgress();
+                    this.showToast('Atributo aprimorado!', 'success');
+                }
+            },
+
+            renderLore() {
+                const grid = document.getElementById('loreScrollsGrid');
+                if (!grid) return;
+
+                grid.innerHTML = LORE_SCROLLS.map(sc => `
+                    <div class="glass-panel p-5 rounded-xl border ${sc.unlocked ? 'border-amber-400/50 bg-purple-950/50' : 'border-purple-900/40 opacity-70'} space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-cinzel font-bold text-amber-300 text-sm flex items-center gap-2">
+                                <span>${sc.unlocked ? '📜' : '🔒'}</span> ${sc.title}
+                            </h4>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full ${sc.unlocked ? 'bg-amber-500/20 text-amber-300' : 'bg-purple-950 text-purple-400'}">${sc.unlocked ? 'Desbloqueado' : sc.req}</span>
+                        </div>
+                        <p class="text-xs text-purple-200 leading-relaxed">${sc.unlocked ? sc.text : 'Este conhecimento antigo está selado por encantos do Arquimago.'}</p>
+                    </div>
+                `).join('');
+            },
+
+            unlockLore(id) {
+                const item = LORE_SCROLLS.find(x => x.id === id);
+                if (item && !item.unlocked) {
+                    item.unlocked = true;
+                    this.renderLore();
+                    this.showToast(`Novo Segredo Revelado: ${item.title}!`, 'success');
+                }
+            },
+
+            resetDataModal() {
+                if (confirm('Deseja realmente criar um novo aprendiz? Seus dados atuais serão reiniciados.')) {
+                    localStorage.removeItem('rocha_chueiri_save');
+                    location.reload();
+                }
+            },
+
+            setupParticleBg() {
+                const canvas = document.getElementById('particleCanvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+
+                let width = canvas.width = window.innerWidth;
+                let height = canvas.height = window.innerHeight;
+
+                window.addEventListener('resize', () => {
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                });
+
+                const particles = Array.from({ length: 45 }, () => ({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 2 + 1,
+                    color: ['#8b5cf6', '#fbbf24', '#06b6d4', '#ec4899'][Math.floor(Math.random() * 4)],
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    alpha: Math.random() * 0.5 + 0.2
+                }));
+
+                function loop() {
+                    ctx.clearRect(0, 0, width, height);
+
+                    particles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+
+                        if (p.x < 0) p.x = width;
+                        if (p.x > width) p.x = 0;
+                        if (p.y < 0) p.y = height;
+                        if (p.y > height) p.y = 0;
+
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = p.color;
+                        ctx.globalAlpha = p.alpha;
+                        ctx.fill();
+                    });
+
+                    ctx.globalAlpha = 1;
+                    requestAnimationFrame(loop);
+                }
+
+                loop();
+            }
+        };
+
+        const gameFlight = {
+            canvas: null,
+            ctx: null,
+            active: false,
+            score: 0,
+            orbs: 0,
+            player: { x: 50, y: 150, size: 24, vy: 0 },
+            obstacles: [],
+            items: [],
+            animFrame: null,
+
+            init() {
+                this.canvas = document.getElementById('flightCanvas');
+                if (!this.canvas) return;
+                this.ctx = this.canvas.getContext('2d');
+
+                // Adjust size
+                const rect = this.canvas.parentElement.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+
+                // Event Listeners for Touch / Mouse
+                this.canvas.onpointerdown = (e) => {
+                    if (this.active) {
+                        this.player.vy = -5.5;
+                        sound.playClick();
+                    }
+                };
+
+                window.onkeydown = (e) => {
+                    if (!this.active) return;
+                    if (e.key === 'ArrowUp') {
+                        this.player.vy = -5.5;
+                        sound.playClick();
+                    } else if (e.key === 'ArrowDown') {
+                        this.player.vy = 5.5;
+                    }
+                };
+            },
+
+            moveUp() { if (this.active) this.player.vy = -5.5; },
+            moveDown() { if (this.active) this.player.vy = 5.5; },
+
+            start() {
+                this.init();
+                this.active = true;
+                this.score = 0;
+                this.orbs = 0;
+                this.player.y = this.canvas.height / 2;
+                this.player.vy = 0;
+                this.obstacles = [];
+                this.items = [];
+
+                document.getElementById('flightStartOverlay').classList.add('hidden');
+                document.getElementById('flightGameOverOverlay').classList.add('hidden');
+
+                if (this.animFrame) cancelAnimationFrame(this.animFrame);
+                this.loop();
+            },
+
+            loop() {
+                if (!this.active) return;
+
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+
+                // Update Player
+                this.player.vy += 0.25; // gravity
+                this.player.y += this.player.vy;
+
+                // Canvas Bounds check
+                if (this.player.y < 10 || this.player.y > h - 10) {
+                    this.gameOver('Sua criatura encostou nas rajadas de vento turbulento!');
+                    return;
+                }
+
+                // Spawn Obstacles (Rocks)
+                if (Math.random() < 0.03) {
+                    const topH = Math.random() * (h * 0.4) + 30;
+                    const gap = 120 + Math.random() * 40;
+                    this.obstacles.push({
+                        x: w,
+                        width: 40,
+                        topH: topH,
+                        botY: topH + gap,
+                        passed: false
+                    });
+                }
+
+                // Spawn Orbs
+                if (Math.random() < 0.02) {
+                    this.items.push({
+                        x: w,
+                        y: Math.random() * (h - 80) + 40,
+                        size: 12,
+                        collected: false
+                    });
+                }
+
+                // Move & Collision Obstacles
+                this.obstacles.forEach(obs => {
+                    obs.x -= 3.5;
+
+                    // Score pass
+                    if (!obs.passed && obs.x < this.player.x) {
+                        obs.passed = true;
+                        this.score += 10;
+                    }
+
+                    // Collision check
+                    if (this.player.x + this.player.size > obs.x && this.player.x - this.player.size < obs.x + obs.width) {
+                        if (this.player.y - this.player.size < obs.topH || this.player.y + this.player.size > obs.botY) {
+                            this.gameOver('Sua criatura colidiu com um pico de rocha!');
+                        }
+                    }
+                });
+
+                // Move & Collect Items
+                this.items.forEach(it => {
+                    it.x -= 3.5;
+                    const dist = Math.hypot(this.player.x - it.x, this.player.y - it.y);
+                    if (!it.collected && dist < this.player.size + it.size) {
+                        it.collected = true;
+                        this.orbs++;
+                        this.score += 25;
+                        sound.playCollect();
+                    }
+                });
+
+                // Filter offscreen
+                this.obstacles = this.obstacles.filter(o => o.x > -50);
+                this.items = this.items.filter(i => i.x > -50 && !i.collected);
+
+                // Draw background & elements
+                this.draw(w, h);
+
+                // UI update
+                document.getElementById('flightScore').innerText = this.score;
+                document.getElementById('flightOrbs').innerText = this.orbs;
+
+                this.animFrame = requestAnimationFrame(() => this.loop());
+            },
+
+            draw(w, h) {
+                this.ctx.clearRect(0, 0, w, h);
+
+                // Sky Gradient
+                const sky = this.ctx.createLinearGradient(0, 0, 0, h);
+                sky.addColorStop(0, '#0f0a21');
+                sky.addColorStop(1, '#2a164d');
+                this.ctx.fillStyle = sky;
+                this.ctx.fillRect(0, 0, w, h);
+
+                // Draw Obstacles
+                this.ctx.fillStyle = '#4c1d95';
+                this.ctx.strokeStyle = '#a78bfa';
+                this.obstacles.forEach(o => {
+                    // Top Pillar
+                    this.ctx.fillRect(o.x, 0, o.width, o.topH);
+                    this.ctx.strokeRect(o.x, 0, o.width, o.topH);
+
+                    // Bottom Pillar
+                    this.ctx.fillRect(o.x, o.botY, o.width, h - o.botY);
+                    this.ctx.strokeRect(o.x, o.botY, o.width, h - o.botY);
+                });
+
+                // Draw Orbs
+                this.items.forEach(i => {
+                    this.ctx.beginPath();
+                    this.ctx.arc(i.x, i.y, i.size, 0, Math.PI * 2);
+                    this.ctx.fillStyle = '#06b6d4';
+                    this.ctx.shadowBlur = 10;
+                    this.ctx.shadowColor = '#06b6d4';
+                    this.ctx.fill();
+                    this.ctx.shadowBlur = 0;
+                });
+
+                // Draw Player Creature
+                const creatureIcon = app.state.student ? CREATURES[app.state.student.creature].icon : '🦅';
+                this.ctx.font = '28px serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(creatureIcon, this.player.x, this.player.y);
+            },
+
+            gameOver(reason) {
+                this.active = false;
+                sound.playHit();
+
+                const teamPts = Math.floor(this.score / 2);
+                app.addXP(teamPts);
+                app.completeTask('t1');
+                app.unlockLore(2); // Unlock Lore scroll 2
+
+                document.getElementById('flightResultText').innerText = reason;
+                document.getElementById('resFlightScore').innerText = this.score;
+                document.getElementById('resFlightOrbs').innerText = this.orbs;
+                document.getElementById('resFlightTeamPts').innerText = `+${teamPts} PTS`;
+
+                document.getElementById('flightGameOverOverlay').classList.remove('hidden');
+            }
+        };
+
+        const gameDuel = {
+            playerHp: 100,
+            playerMana: 100,
+            enemyHp: 100,
+            enemyMana: 100,
+            turn: 'player',
+
+            initDuel() {
+                this.playerHp = 100;
+                this.playerMana = 100;
+                this.enemyHp = 100;
+                this.enemyMana = 100;
+                this.turn = 'player';
+
+                this.renderUI();
+                this.renderCards();
+               
+                const log = document.getElementById('duelLog');
+                if (log) log.innerHTML = '<div class="text-amber-400">⚡ O duelo começou! Escolha sua magia.</div>';
+            },
+
+            renderUI() {
+                const p = app.state.student;
+                if (!p) return;
+
+                document.getElementById('duelPlayerAvatar').innerText = RACES[p.race].icon === 'FA' ? '🧚' : RACES[p.race].icon;
+                document.getElementById('duelPlayerName').innerText = p.name;
+                document.getElementById('duelPlayerTeam').innerText = TEAMS[p.team].name;
+
+                document.getElementById('duelPlayerHpVal').innerText = `${this.playerHp}/100`;
+                document.getElementById('duelPlayerHpBar').style.width = `${this.playerHp}%`;
+               
+                document.getElementById('duelPlayerManaVal').innerText = `${this.playerMana}/100`;
+                document.getElementById('duelPlayerManaBar').style.width = `${this.playerMana}%`;
+
+                document.getElementById('duelEnemyHpVal').innerText = `${this.enemyHp}/100`;
+                document.getElementById('duelEnemyHpBar').style.width = `${this.enemyHp}%`;
+
+                document.getElementById('duelEnemyManaVal').innerText = `${this.enemyMana}/100`;
+                document.getElementById('duelEnemyManaBar').style.width = `${this.enemyMana}%`;
+            },
+
+            renderCards() {
+                const grid = document.getElementById('spellCardGrid');
+                if (!grid) return;
+
+                grid.innerHTML = SPELLS.map(sp => `
+                    <button onclick="gameDuel.castSpell('${sp.id}')" ${this.playerMana < sp.cost || this.turn !== 'player' ? 'disabled' : ''}
+                        class="glass-panel p-3 rounded-xl border border-purple-500/40 hover:border-amber-400 disabled:opacity-40 disabled:hover:border-purple-500/40 transition text-left flex flex-col justify-between h-28 space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl">${sp.icon}</span>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">${sp.cost} MP</span>
+                        </div>
+                        <div>
+                            <div class="font-cinzel text-xs font-bold text-amber-200 leading-tight">${sp.name}</div>
+                            <div class="text-[9px] text-purple-300">${sp.type}</div>
+                        </div>
+                    </button>
+                `).join('');
+            },
+
+            addLog(msg, colorClass = 'text-purple-300') {
+                const log = document.getElementById('duelLog');
+                if (!log) return;
+                const div = document.createElement('div');
+                div.className = colorClass;
+                div.innerText = msg;
+                log.appendChild(div);
+                log.scrollTop = log.scrollHeight;
+            },
+
+            castSpell(spellId) {
+                if (this.turn !== 'player') return;
+
+                const spell = SPELLS.find(s => s.id === spellId);
+                if (!spell || this.playerMana < spell.cost) return;
+
+                sound.playSpell();
+                this.playerMana -= spell.cost;
+
+                // Apply damage/heal
+                if (spell.dmg > 0) {
+                    const totalDmg = spell.dmg + Math.floor(app.state.stats.forca / 2);
+                    this.enemyHp = Math.max(0, this.enemyHp - totalDmg);
+                    this.addLog(`✨ Você lançou ${spell.name} causando ${totalDmg} de dano!`, 'text-cyan-300');
+                }
+
+                if (spell.heal > 0) {
+                    this.playerHp = Math.min(100, this.playerHp + spell.heal);
+                    this.addLog(`💚 Você regenerou ${spell.heal} de vida com ${spell.name}!`, 'text-emerald-300');
+                }
+
+                this.renderUI();
+
+                if (this.enemyHp <= 0) {
+                    this.winDuel();
+                    return;
+                }
+
+                this.turn = 'enemy';
+                this.renderCards();
+                setTimeout(() => this.enemyTurn(), 1200);
+            },
+
+            enemyTurn() {
+                if (this.enemyHp <= 0) return;
+
+                // Enemy AI pick
+                const availSpells = SPELLS.filter(s => s.cost <= this.enemyMana);
+                const picked = availSpells.length > 0 ? availSpells[Math.floor(Math.random() * availSpells.length)] : SPELLS[0];
+
+                if (this.enemyMana >= picked.cost) {
+                    this.enemyMana -= picked.cost;
+                    if (picked.dmg > 0) {
+                        this.playerHp = Math.max(0, this.playerHp - picked.dmg);
+                        this.addLog(`⚡ Rival lançou ${picked.name} causando ${picked.dmg} de dano em você!`, 'text-red-300');
+                        sound.playHit();
+                    }
+                    if (picked.heal > 0) {
+                        this.enemyHp = Math.min(100, this.enemyHp + picked.heal);
+                        this.addLog(`🛡️ Rival usou ${picked.name} para curar ${picked.heal} HP.`, 'text-purple-300');
+                    }
+                } else {
+                    // Mana regenerate
+                    this.enemyMana = Math.min(100, this.enemyMana + 20);
+                    this.addLog(`🔮 Rival concentrou energia para recuperar Mana.`, 'text-purple-400');
+                }
+
+                // Player passive mana regen
+                this.playerMana = Math.min(100, this.playerMana + 15);
+
+                this.renderUI();
+
+                if (this.playerHp <= 0) {
+                    this.addLog(`💀 Você foi derrotado no duelo. Tente novamente!`, 'text-red-400 font-bold');
+                    this.turn = 'player';
+                    this.renderCards();
+                    return;
+                }
+
+                this.turn = 'player';
+                this.renderCards();
+            },
+
+            winDuel() {
+                sound.playVictory();
+                this.addLog(`🏆 VITÓRIA! Você venceu o duelo místico!`, 'text-amber-300 font-bold text-sm');
+                app.addXP(60);
+                app.completeTask('t2');
+                app.unlockLore(3); // Unlock Lore scroll 3
+            }
+        };
+
+        const gamePuzzle = {
+            runes: ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ'],
+            sequence: [],
+            playerSeq: [],
+            level: 1,
+            isPlaying: false,
+
+            renderRunes() {
+                const container = document.getElementById('runeButtonContainer');
+                if (!container) return;
+
+                container.innerHTML = this.runes.map((r, i) => `
+                    <button id="runeBtn-${i}" onclick="gamePuzzle.handleRuneClick(${i})"
+                        class="h-24 rounded-2xl glass-panel border border-purple-500/30 font-cinzel text-4xl text-amber-300 hover:border-amber-400 active:scale-95 transition flex items-center justify-center shadow-lg">
+                        ${r}
+                    </button>
+                `).join('');
+            },
+
+            startLevel() {
+                sound.playClick();
+                this.renderRunes();
+                this.sequence = [];
+                this.playerSeq = [];
+                this.isPlaying = true;
+
+                for (let i = 0; i < this.level + 2; i++) {
+                    this.sequence.push(Math.floor(Math.random() * 4));
+                }
+
+                document.getElementById('puzzleStatusBox').innerText = 'Observe a sequência das runas...';
+                this.showSequence();
+            },
+
+            showSequence() {
+                let idx = 0;
+                const interval = setInterval(() => {
+                    const runeIdx = this.sequence[idx];
+                    this.highlightRune(runeIdx);
+                    idx++;
+
+                    if (idx >= this.sequence.length) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            document.getElementById('puzzleStatusBox').innerText = 'Sua vez! Repita a sequência das runas.';
+                        }, 500);
+                    }
+                }, 800);
+            },
+
+            highlightRune(index) {
+                const btn = document.getElementById(`runeBtn-${index}`);
+                if (!btn) return;
+
+                sound.playBeep(400 + index * 100, 'sine', 0.2, 0.15);
+                btn.classList.add('bg-amber-400', 'text-magic-dark', 'scale-105', 'border-amber-300');
+
+                setTimeout(() => {
+                    btn.classList.remove('bg-amber-400', 'text-magic-dark', 'scale-105', 'border-amber-300');
+                }, 400);
+            },
+
+            handleRuneClick(index) {
+                if (!this.isPlaying) return;
+
+                this.highlightRune(index);
+                this.playerSeq.push(index);
+
+                const currentStep = this.playerSeq.length - 1;
+
+                if (this.playerSeq[currentStep] !== this.sequence[currentStep]) {
+                    sound.playHit();
+                    document.getElementById('puzzleStatusBox').innerText = '❌ Sequência incorreta! Tente novamente.';
+                    this.isPlaying = false;
+                    return;
+                }
+
+                if (this.playerSeq.length === this.sequence.length) {
+                    sound.playVictory();
+                    document.getElementById('puzzleStatusBox').innerText = '✨ Excelente! Runas decifradas!';
+                    this.level++;
+                    document.getElementById('puzzleLevelText').innerText = `Nível ${this.level}`;
+                    app.addXP(45);
+                    app.completeTask('t3');
+                    app.unlockLore(4); // Unlock Lore scroll 4
+                    this.isPlaying = false;
+                }
+            }
+        };
+
+        // Initialize App on DOM Load
+        window.onload = function() {
+            app.init();
+            gamePuzzle.renderRunes();
+        };
+    </script>
+</body>
+</html>
